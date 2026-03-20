@@ -1,0 +1,131 @@
+<!--contenedor completo del chat-->
+<div class="chat-container">
+    <header class="chat-header">
+        <div class="user-info">
+            <img src="{{usuario?.photoURL}}"
+                alt="imagen del usuario"
+                class="user-avatar" 
+                (error)="manejoerrorimagen($event)">
+            <div class="user-details">
+                <h2 class="user-name">{{usuario?.displayName}}</h2>
+                <p class="user-email">{{usuario?.email}}</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="logout-btn"
+                    (click)="logout()">
+                salir
+            </button>
+        </div>
+    </header>
+    <main class="chat-messages" #messagesContainer>
+        <!--validacion en caso de que no hayan mensajes dar la bienvendia-->
+        @if(mensajes.length == 0 && !cargandohistorial){
+        <div class="welcome-message">
+            <div class="welcome-content">
+                <div class="welcome-icon">👻</div>
+                <h2>Hola soy tu asistente virtual</h2>
+                <p>¿En qué puedo ayudarte sobre programacion?</p>
+                <p class="welcome-tip"><strong>consejo</strong> se especifico en tus preguntas para obtener mejores
+                    resultados</p>
+            </div>
+        </div>
+        }
+        <!--en caso de que si haya mensajes -->
+        @if(cargandohistorial){
+        <div class="loading-history">
+            <div class="loading-spinner"></div>
+            <p>Cargando historial de mensajes...</p>
+        </div>
+        }
+        <!--lista de mensajes dependiendo el tipo (usuario o asistente)-->
+        <div class="messages-list">
+            @for(mensaje of mensajes; track trackbymensaje($index, mensaje)){
+                <div class="message-wrapper" [class.user-message]="mensaje.tipo === 'usuario'"
+                    [class.assistant-message]="mensaje.tipo === 'asistente'">
+                    <!--validar si el mensaje es de usuario-->
+                    @if(mensaje.tipo === 'usuario'){
+                    <div class="message user-msg">
+                        <div class="message-content">
+                            <p>{{mensaje.contenido}}</p>
+                        </div>
+                        <div class="message-time">
+                            <p>{{formatearHora(mensaje.fechadeenvio)}}</p>
+                        </div>
+                    </div>
+                    }
+
+                    <!--validar si el mensaje es de asistente-->
+                    @if(mensaje.tipo === 'asistente'){
+                    <div class="message assistant-msg">
+                        <div class="message-avatar">
+                            👻
+                        </div>
+                        <div class="message-bubble">
+                            <div class="message-content">
+                                <p [innerHTML]="formatearMensajeAsistente(mensaje.contenido)"> </p>
+                            </div>
+                            <div class="message-time">
+                                <p>{{formatearHora(mensaje.fechadeenvio)}}</p>
+                                @if(mensaje.estado === 'error'){
+                                <span class="error-indicator" title="Error al enviar mensaje">⚠️</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            }                                                                       
+
+            <!--Si el asistente esta escribiendo un mensaje-->
+            @if(asistenteEscribiendo){
+                <div class="message-wrapper assistant-message">
+                    <div class="message assistant-msg typing">
+                        <div class="message-avatar">
+                            👻
+                        </div>
+                        <div class="message-bubble">
+                            <div class="typing-indicator">
+                                <div class="typing-dots">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                </div>
+                                <p class="typing-text">El asistente esta escribiendo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+
+    <footer class="chat-input">
+        <form class="input-form"
+        (ngsubmit)="enviarmensaje()" 
+        #chatForm="ngForm">
+        <div class="input-wrapper">
+            <textarea name="mensaje"
+            #mensajeInput
+            [(ngModel)]="mensajeTexto"
+            placeholder="escribe tu mensaje aqui,(presiona enviar o shift + enter para salto de linea)"
+            class="message-input"
+            [disabled]="enviandoMensaje||asistenteEscribiendo"
+            (keydown)="manejarTeclaPresionada($event)"></textarea>
+        </div>
+        <button 
+        type="submit"
+        class="send-btn"
+        [disabled]="!mensajeTexto.trim()||enviandoMensaje||asistenteEscribiendo"
+        [class.sending]="enviandoMensaje">
+            @if(enviandoMensaje){
+            <span></span>
+            }
+                @if(!enviandoMensaje){
+                <span class="sending-spinner"></span>
+                }
+        </button>
+
+        </form>
+    </footer>
+</div>
