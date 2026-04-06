@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, catchError } from 'rxjs';
 import { Observable, throwError } from 'rxjs';
-import {enviroment} from '../../enviroments/enviroment';
+import {environment} from '../../environments/environment';
 
 interface peticionGemini{
   contents: contentGemini[];
@@ -52,8 +52,8 @@ export class GeminiService {
   private http = inject(HttpClient)
 
   //variables que llevan la URL
-  private apiUrl = enviroment.gemini.apiUrl
-  private apiKey = enviroment.gemini.apiKey
+  private apiUrl = environment.gemini.apiUrl
+  private apiKey = environment.gemini.apiKey
 
   enviarMensaje(mensaje: string, historialPrevio: contentGemini[]=[]): Observable<string>{
 

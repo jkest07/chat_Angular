@@ -22,7 +22,7 @@ export class AuthService {
   //funcion asincrona que permite el inicio de sesion 
   async iniciarSesion():Promise<Usuario | null>{
       try{
-        const proveedor = new GoogleAuthProvider;
+        const proveedor = new GoogleAuthProvider();
 
         //controladores
         proveedor.addScope('email')
