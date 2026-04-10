@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "chat_angular/dist/chat_angular/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
